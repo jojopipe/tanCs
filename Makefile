@@ -1,4 +1,4 @@
 cc = gcc
 
 all tanCs:
-	cc -lraylib -Wall src/*.c -o tanCs
+	cc -lraylib -Wall -g src/*.c -o tanCs
