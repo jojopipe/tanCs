@@ -2,6 +2,7 @@
 #include "settings.h"
 #include <raylib.h>
 #include "tank.h"
+#include "map.h"
 
 
 #if defined(PLATFORM_DESKTOP)
@@ -10,15 +11,6 @@
     #define GLSL_VERSION            100
 #endif
 
-void rotate(float* r, float speed, float direction) {
-	if (*r == direction)
-		return;
-
-	if (*r - direction < 0)
-		*r += speed;
-	else
-		*r -= speed;
-}
 
 int init_game() {
     struct window_parameters wparam;
@@ -30,11 +22,11 @@ int init_game() {
     if (wparam.window_state == 1) ToggleBorderlessWindowed();
     SetTargetFPS(144);
     Camera camera = { 0 };
-    camera.position = (Vector3) {25.0f, 25.0f, 0.f};
+    camera.position = (Vector3) {45.0f, 35.0f, 0.f};
     camera.target = (Vector3) {0.0f, 0.0f, 0.0f};
     camera.up = (Vector3) {0.0f, 1.0f, 0.0f};
-    camera.fovy = 70.0f;
-    camera.projection = CAMERA_PERSPECTIVE;
+    camera.fovy = 65.f;
+    camera.projection = CAMERA_ORTHOGRAPHIC;
 
     Model characterModel = LoadModel("tnk_tank_p.glb");
     Vector3 tank_pos = {0.0f, 0.0f, 0.0f};
@@ -47,6 +39,9 @@ int init_game() {
 	tank_t tank;
 
 	tank_create_default(&tank);
+	map_t map;
+	map_load_from_file(&map, "map1.map");
+	map_print(&map);	
 
     while(!WindowShouldClose()) {
         BeginDrawing();
@@ -55,9 +50,11 @@ int init_game() {
 		
 //        DrawModel(characterModel, pos, 0.2f, RED);
 //		DrawModelEx(characterModel, pos, (Vector3) {0, 1, 0}, r_angle, (Vector3) {0.2, 0.2, 0.2}, (Color){255, 0, 0, 70});
-        DrawGrid(15, 4.0f);
+		map_render(&map);
+        DrawGrid(20, 5.0f);
 		tank_draw(&tank);
-
+//DrawCube((Vector3) {-25 * 5, 1, -25 * 5})
+			
 		if (IsKeyDown(KEY_W) && IsKeyDown(KEY_D))
 			tank_move(&tank, 225);
 		else if (IsKeyDown(KEY_A) && IsKeyDown(KEY_S))
